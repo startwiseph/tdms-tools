@@ -1,20 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { primaryFont } from "@/fonts";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
     manifest: "/manifest.json",
-    title: "Next.js PWA powered by Serwist"
+    title: "TDMS Tools"
 };
 
 export default function RootLayout({
@@ -25,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${primaryFont.variable} antialiased`}
       >
         {children}
       </body>
