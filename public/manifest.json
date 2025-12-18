@@ -20,8 +20,8 @@
       "purpose": "any"
     }
   ],
-  "theme_color": "#154a8f",
-  "background_color": "#154a8f",
+  "theme_color": "#004995",
+  "background_color": "#004995",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
