@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export interface Step2Data {
   partnerName: string;
@@ -56,7 +57,12 @@ export function Step2Form({ initialValues, onDataChange }: Step2FormProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-foreground">Partner Information</h2>
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">Partner Information</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Enter your personal information as this will be needed in the form.
+        </p>
+      </div>
       
       <div className="space-y-2">
         <Label htmlFor="partner-name">Partner&apos;s Name</Label>
@@ -125,34 +131,28 @@ export function Step2Form({ initialValues, onDataChange }: Step2FormProps) {
         />
       </div>
 
-      <div className="space-y-4 border-t pt-6 mt-6">
-        <Label className="text-base font-semibold">
+      <div className="space-y-2 border-t pt-6 mt-6">
+        <Label htmlFor="victory-member">
           Are you a member of Victory Christian Fellowship in the Philippines?
         </Label>
-        <div className="flex gap-4">
-          <button
-            type="button"
-            onClick={() => setIsVictoryMember(true)}
-            className={`px-4 py-2 rounded-md border-2 transition-colors ${
-              isVictoryMember === true
-                ? "border-blue-600 bg-blue-50 text-blue-700"
-                : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
-            }`}
-          >
-            Yes
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsVictoryMember(false)}
-            className={`px-4 py-2 rounded-md border-2 transition-colors ${
-              isVictoryMember === false
-                ? "border-blue-600 bg-blue-50 text-blue-700"
-                : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
-            }`}
-          >
-            No
-          </button>
-        </div>
+        <RadioGroup
+          value={isVictoryMember === null ? "" : isVictoryMember ? "yes" : "no"}
+          onValueChange={(value) => setIsVictoryMember(value === "yes" ? true : value === "no" ? false : null)}
+          className="mt-2 flex gap-4"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="yes" id="victory-member-yes" />
+            <Label htmlFor="victory-member-yes" className="font-normal cursor-pointer">
+              Yes
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="no" id="victory-member-no" />
+            <Label htmlFor="victory-member-no" className="font-normal cursor-pointer">
+              No
+            </Label>
+          </div>
+        </RadioGroup>
       </div>
     </div>
   );

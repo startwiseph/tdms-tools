@@ -42,31 +42,37 @@ export function Step3Form({ initialValues, onDataChange }: Step3FormProps) {
         I confirm the options I&apos;ve selected below as my instructions to the Gift Processing Office on how to handle my support in each specified scenario.
       </p>
 
-      <div className="space-y-6">
+      <div className="">
         {accountabilityQuestions.map((questionData, index) => (
-          <div key={index} className="space-y-3">
-            <Label className="text-base font-medium">
-              {questionData.question.split("*")[0]}
-              {questionData.question.includes("*") && (
-                <span className="text-red-500">*</span>
-              )}
-            </Label>
-            <RadioGroup
-              value={answers[index] || ""}
-              onValueChange={(value) => handleAnswerChange(index, value)}
-            >
-              {questionData.choices.map((choice, choiceIndex) => (
-                <div key={choiceIndex} className="flex items-center space-x-2">
-                  <RadioGroupItem value={choice} id={`q${index}-c${choiceIndex}`} />
-                  <Label
-                    htmlFor={`q${index}-c${choiceIndex}`}
-                    className="font-normal cursor-pointer"
-                  >
-                    {choice}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
+          <div key={index}>
+            <div className="space-y-4">
+              <Label className="text-base font-medium">
+                {questionData.question.split("*")[0]}
+                {questionData.question.includes("*") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </Label>
+              <RadioGroup
+                value={answers[index] || ""}
+                onValueChange={(value) => handleAnswerChange(index, value)}
+                className="mt-4"
+              >
+                {questionData.choices.map((choice, choiceIndex) => (
+                  <div key={choiceIndex} className="flex items-center space-x-1">
+                    <RadioGroupItem value={choice} id={`q${index}-c${choiceIndex}`} />
+                    <Label
+                      htmlFor={`q${index}-c${choiceIndex}`}
+                      className="font-normal cursor-pointer"
+                    >
+                      {choice}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+            {index < accountabilityQuestions.length - 1 && (
+              <div className="border-t border-gray-200 mt-6 pt-6" />
+            )}
           </div>
         ))}
       </div>

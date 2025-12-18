@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ProgressBar";
+import { PrivacyInfoBanner } from "@/components/PrivacyInfoBanner";
 import { Step1Form, type Step1Data } from "@/components/Step1Form";
 import { Step2Form, type Step2Data } from "@/components/Step2Form";
 import { Step3Form, type Step3Data } from "@/components/Step3Form";
 import { Step4Form, type Step4Data } from "@/components/Step4Form";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface MultiStepFormProps {
   initialStep1?: Partial<Step1Data>;
@@ -44,6 +45,16 @@ export function MultiStepForm({
       setCurrentStep(nextStep);
       if (onStepChange) {
         onStepChange(nextStep);
+      }
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      const prevStep = currentStep - 1;
+      setCurrentStep(prevStep);
+      if (onStepChange) {
+        onStepChange(prevStep);
       }
     }
   };
@@ -188,20 +199,43 @@ export function MultiStepForm({
         totalSteps={4}
       />
       
+      <PrivacyInfoBanner />
+      
       <div className="min-h-[400px]">
         {renderStep()}
       </div>
 
-      <div className="flex justify-end">
-        {currentStep < 4 ? (
-          <Button onClick={handleNext}>
-            Next
+      <div className="flex justify-between">
+        {currentStep > 1 ? (
+          <Button
+            onClick={handleBack}
+            variant="outline"
+            className="border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Back
           </Button>
         ) : (
-          <Button onClick={handleFinish}>
+          <div />
+        )}
+        {currentStep < 4 ? (
+          <Button
+            onClick={handleNext}
+            variant="outline"
+            className="border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        ) : step4Data?.signatureType && (step4Data?.uploadedFile || step4Data?.signatureDataUrl) ? (
+          <Button
+            onClick={handleFinish}
+            variant="outline"
+            className="border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+          >
             Finish
           </Button>
-        )}
+        ) : null}
       </div>
     </div>
   );
