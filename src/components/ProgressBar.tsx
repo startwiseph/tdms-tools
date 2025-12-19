@@ -14,7 +14,7 @@ export function ProgressBar({ currentStep, onStepClick, totalSteps = 4 }: Progre
       {Array.from({ length: totalSteps }).map((_, index) => {
         const stepNumber = index + 1;
         const isActive = stepNumber <= currentStep;
-        
+
         return (
           <button
             key={stepNumber}
@@ -22,7 +22,7 @@ export function ProgressBar({ currentStep, onStepClick, totalSteps = 4 }: Progre
             onClick={() => onStepClick(stepNumber)}
             className={cn(
               "flex-1 h-1 rounded-full transition-colors cursor-pointer",
-              isActive ? "bg-bc-1" : "bg-bc-1/20"
+              isActive ? "bg-bc-1" : "bg-bc-1/20",
             )}
             aria-label={`Go to step ${stepNumber}`}
           />
@@ -31,4 +31,3 @@ export function ProgressBar({ currentStep, onStepClick, totalSteps = 4 }: Progre
     </div>
   );
 }
-

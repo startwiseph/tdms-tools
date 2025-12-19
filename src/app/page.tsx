@@ -28,10 +28,12 @@ function HomeContent() {
     // Determine which image should be shown based on step
     const shouldShowPIC = currentStep === 1 || currentStep === 2;
     const shouldShowSAF = currentStep === 3 || currentStep === 4;
-    const newImage = shouldShowPIC 
-      ? "/images/PIC.png" 
-      : shouldShowSAF 
-        ? (isVictoryMember === true ? "/images/SAF_victory.png" : "/images/SAF.png")
+    const newImage = shouldShowPIC
+      ? "/images/PIC.png"
+      : shouldShowSAF
+        ? isVictoryMember === true
+          ? "/images/SAF_victory.png"
+          : "/images/SAF.png"
         : null;
 
     if (!newImage) return;
@@ -45,13 +47,13 @@ function HomeContent() {
       // Start flip-out animation
       setIsFlipping(true);
       setIsFlippingIn(false);
-      
+
       // Change image early in flip-out for seamless transition (no pause)
       setTimeout(() => {
         setDisplayImage(newImage);
         setIsFlipping(false);
         setIsFlippingIn(true);
-        
+
         // Remove flip-in class after animation completes
         setTimeout(() => {
           setIsFlippingIn(false);
@@ -88,28 +90,29 @@ function HomeContent() {
               <PrivacyInfoBanner />
             </div>
           </div>
-          <MultiStepForm 
+          <MultiStepForm
             initialStep1={initialStep1}
             onStepChange={setCurrentStep}
             onVictoryMemberChange={setIsVictoryMember}
           />
-          
+
           {/* Footer */}
-          <footer className="mt-8 pt-6 border-t border-white/20">
+          <footer className="mt-3 pt-6">
             <p className="text-xs text-white/70 leading-relaxed">
               {new Date().getFullYear()} © TDMS Tools. All rights reserved. Made by{" "}
-              <a 
-                href="https://instagram.com/louislemsic" 
-                target="_blank" 
+              <a
+                href="https://instagram.com/louislemsic"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-white hover:underline"
               >
                 James Louis Lemsic
               </a>
-              . This project is made open source for developers to audit the source code and enable others to contribute,{" "}
-              <a 
-                href="https://github.com/startwiseph/tdms-tools" 
-                target="_blank" 
+              . This project is made open source for developers to audit the source code and enable others to
+              contribute,{" "}
+              <a
+                href="https://github.com/startwiseph/tdms-tools"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-white hover:underline"
               >
@@ -125,15 +128,10 @@ function HomeContent() {
       <div className="hidden lg:flex lg:w-2/3 bg-bc-1/20 items-center justify-center p-8">
         <div className="w-full max-w-4xl flip-container">
           {displayImage && (
-            <div className={`bg-white rounded-lg shadow-lg p-4 flip-image ${isFlipping ? 'flipping' : isFlippingIn ? 'flipping-in' : ''}`}>
-              <Image
-                src={displayImage}
-                alt="Preview"
-                width={800}
-                height={1000}
-                className="w-full h-auto"
-                priority
-              />
+            <div
+              className={`bg-white rounded-lg shadow-lg p-4 flip-image ${isFlipping ? "flipping" : isFlippingIn ? "flipping-in" : ""}`}
+            >
+              <Image src={displayImage} alt="Preview" width={800} height={1000} className="w-full h-auto" priority />
             </div>
           )}
         </div>
@@ -144,9 +142,13 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen bg-bc-1 items-center justify-center">
-      <div className="text-white">Loading...</div>
-    </div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen bg-bc-1 items-center justify-center">
+          <div className="text-white">Loading...</div>
+        </div>
+      }
+    >
       <HomeContent />
     </Suspense>
   );

@@ -36,9 +36,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
   const [nation, setNation] = useState(initialValues?.nation || "");
   const [date, setDate] = useState<Date | undefined>(() => {
     if (!initialValues?.date) return undefined;
-    const dateValue = initialValues.date instanceof Date 
-      ? initialValues.date 
-      : new Date(initialValues.date as any);
+    const dateValue = initialValues.date instanceof Date ? initialValues.date : new Date(initialValues.date as any);
     // Validate: if date is in the past, return undefined
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -62,9 +60,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
     if (!nationSearchValue) return countriesData;
     const searchLower = nationSearchValue.toLowerCase();
     return countriesData.filter(
-      (country) =>
-        country.name.toLowerCase().includes(searchLower) ||
-        country.code.toLowerCase().includes(searchLower)
+      (country) => country.name.toLowerCase().includes(searchLower) || country.code.toLowerCase().includes(searchLower),
     );
   }, [countriesData, nationSearchValue]);
 
@@ -82,9 +78,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
       setNation(initialValues.nation);
     }
     if (initialValues?.date !== undefined) {
-      const dateValue = initialValues.date instanceof Date 
-        ? initialValues.date 
-        : new Date(initialValues.date as any);
+      const dateValue = initialValues.date instanceof Date ? initialValues.date : new Date(initialValues.date as any);
       // Validate: if date is in the past, don't set it
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -111,16 +105,15 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [missionerName, nation, date, church]);
 
-
   return (
     <div className="space-y-4">
       <div>
         <h2 className="text-xl font-semibold text-foreground">Missioner Information</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-white/80 mt-1">
           Please enter the details of the missioner you will support along with their travel details.
         </p>
       </div>
-      
+
       <div className="space-y-2">
         <Label htmlFor="missioner-name">Missioner&apos;s Name</Label>
         <Input
@@ -163,9 +156,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
             </div>
             <div className="max-h-[300px] overflow-y-auto">
               {filteredCountries.length === 0 ? (
-                <div className="p-4 text-center text-sm text-muted-foreground">
-                  No country found.
-                </div>
+                <div className="p-4 text-center text-sm text-muted-foreground">No country found.</div>
               ) : (
                 filteredCountries.map((country) => (
                   <button
@@ -173,7 +164,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
                     type="button"
                     className={cn(
                       "relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-bc-1/10 hover:text-bc-1",
-                      nation === country.code && "bg-bc-1/10 text-bc-1"
+                      nation === country.code && "bg-bc-1/10 text-bc-1",
                     )}
                     onClick={() => {
                       setNation(country.code);
@@ -181,12 +172,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
                       setNationSearchOpen(false);
                     }}
                   >
-                    <Check
-                      className={cn(
-                        "h-4 w-4",
-                        nation === country.code ? "opacity-100" : "opacity-0"
-                      )}
-                    />
+                    <Check className={cn("h-4 w-4", nation === country.code ? "opacity-100" : "opacity-0")} />
                     <span>{country.flag}</span>
                     <span>{country.name}</span>
                   </button>
@@ -206,7 +192,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal hover:bg-white hover:border-bc-1/30",
-                !date && "text-bc-3"
+                !date && "text-bc-3",
               )}
             >
               <CalendarIcon className={cn("mr-2 h-4 w-4", !date ? "text-bc-3" : "")} />

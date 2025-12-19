@@ -13,16 +13,10 @@ export const accountabilityQuestions: QuestionChoice[] = [
   },
   {
     question: "If the missioner or team is REROUTED, please*",
-    choices: [
-      "Retain my support",
-      "Redirect my support to the Every Nation World Missions General Fund",
-    ],
+    choices: ["Retain my support", "Redirect my support to the Every Nation World Missions General Fund"],
   },
   {
     question: "If the trip is CANCELED, please*",
-    choices: [
-      "Redirect my support to the Every Nation World Missions General Fund",
-    ],
+    choices: ["Redirect my support to the Every Nation World Missions General Fund"],
   },
 ];
-

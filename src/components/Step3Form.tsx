@@ -15,9 +15,7 @@ interface Step3FormProps {
 }
 
 export function Step3Form({ initialValues, onDataChange }: Step3FormProps) {
-  const [answers, setAnswers] = useState<Record<number, string>>(
-    initialValues?.answers || {}
-  );
+  const [answers, setAnswers] = useState<Record<number, string>>(initialValues?.answers || {});
 
   useEffect(() => {
     if (onDataChange) {
@@ -35,12 +33,13 @@ export function Step3Form({ initialValues, onDataChange }: Step3FormProps) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-foreground">
-        Support Accountability Form
-      </h2>
-      <p className="text-sm text-muted-foreground">
-        I confirm the options I&apos;ve selected below as my instructions to the Gift Processing Office on how to handle my support in each specified scenario.
-      </p>
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">Support Accountability Form</h2>
+        <p className="text-sm text-white/80 mt-1">
+          I confirm the options I&apos;ve selected below as my instructions to the Gift Processing Office on how to
+          handle my support in each specified scenario.
+        </p>
+      </div>
 
       <div className="">
         {accountabilityQuestions.map((questionData, index) => (
@@ -48,9 +47,7 @@ export function Step3Form({ initialValues, onDataChange }: Step3FormProps) {
             <div className="space-y-4">
               <Label className="text-base font-semibold">
                 {index + 1}. {questionData.question.split("*")[0]}
-                {questionData.question.includes("*") && (
-                  <span className="text-white">*</span>
-                )}
+                {questionData.question.includes("*") && <span className="text-white">*</span>}
               </Label>
               <RadioGroup
                 value={answers[index] || ""}
@@ -60,23 +57,17 @@ export function Step3Form({ initialValues, onDataChange }: Step3FormProps) {
                 {questionData.choices.map((choice, choiceIndex) => (
                   <div key={choiceIndex} className="flex items-center space-x-1">
                     <RadioGroupItem value={choice} id={`q${index}-c${choiceIndex}`} />
-                    <Label
-                      htmlFor={`q${index}-c${choiceIndex}`}
-                      className="font-normal cursor-pointer"
-                    >
+                    <Label htmlFor={`q${index}-c${choiceIndex}`} className="font-normal cursor-pointer">
                       {choice}
                     </Label>
                   </div>
                 ))}
               </RadioGroup>
             </div>
-            {index < accountabilityQuestions.length - 1 && (
-              <div className="border-t border-bc-3/90 mt-6 pt-6" />
-            )}
+            {index < accountabilityQuestions.length - 1 && <div className="border-t border-bc-3/90 mt-6 pt-6" />}
           </div>
         ))}
       </div>
     </div>
   );
 }
-

@@ -18,21 +18,13 @@ interface Step4FormProps {
 }
 
 export function Step4Form({ initialValues, onDataChange }: Step4FormProps) {
-  const [selectedMethod, setSelectedMethod] = useState<"upload" | "draw" | null>(
-    initialValues?.signatureType || null
-  );
-  const [signatureType, setSignatureType] = useState<"upload" | "draw" | null>(
-    initialValues?.signatureType || null
-  );
-  const [uploadedFile, setUploadedFile] = useState<File | null>(
-    initialValues?.uploadedFile || null
-  );
-  const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(
-    initialValues?.signatureDataUrl || null
-  );
+  const [selectedMethod, setSelectedMethod] = useState<"upload" | "draw" | null>(initialValues?.signatureType || null);
+  const [signatureType, setSignatureType] = useState<"upload" | "draw" | null>(initialValues?.signatureType || null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(initialValues?.uploadedFile || null);
+  const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(initialValues?.signatureDataUrl || null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -110,12 +102,12 @@ export function Step4Form({ initialValues, onDataChange }: Step4FormProps) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    
-    const clientX = 'touches' in e ? e.touches[0]?.clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0]?.clientY : e.clientY;
-    
+
+    const clientX = "touches" in e ? e.touches[0]?.clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0]?.clientY : e.clientY;
+
     if (clientX === undefined || clientY === undefined) return { x: 0, y: 0 };
-    
+
     return {
       x: (clientX - rect.left) * scaleX,
       y: (clientY - rect.top) * scaleY,
@@ -126,10 +118,10 @@ export function Step4Form({ initialValues, onDataChange }: Step4FormProps) {
     e.preventDefault();
     if (!canvasRef.current) return;
     const { x, y } = getCoordinates(e);
-    
+
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
-    
+
     ctx.beginPath();
     ctx.moveTo(x, y);
     setIsDrawing(true);
@@ -141,10 +133,10 @@ export function Step4Form({ initialValues, onDataChange }: Step4FormProps) {
     e.preventDefault();
     if (!isDrawing || !canvasRef.current) return;
     const { x, y } = getCoordinates(e);
-    
+
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
-    
+
     ctx.lineTo(x, y);
     ctx.stroke();
   };
@@ -167,18 +159,18 @@ export function Step4Form({ initialValues, onDataChange }: Step4FormProps) {
     }
   };
 
-
   // If no method selected, show selection buttons
   if (!selectedMethod) {
     return (
       <div className="space-y-6">
         <div>
           <h2 className="text-xl font-semibold text-white">Signature</h2>
-          <p className="text-sm text-white/70 mt-1">
-            Last step! Add your signature for the form to be complete. The app will not store your signature and will only use it to append to the document.
+          <p className="text-sm text-white/80 mt-1">
+            Last step! Add your signature for the form to be complete. The app will not store your signature and will
+            only use it to append to the document.
           </p>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-4">
           {/* Upload Button */}
           <button
@@ -206,92 +198,66 @@ export function Step4Form({ initialValues, onDataChange }: Step4FormProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-white">Signature</h2>
-          <p className="text-sm text-white/70 mt-1">
-            Last step! Add your signature for the form to be complete. The app will not store your signature and will only use it to append to the document.
-          </p>
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="text-white hover:bg-white/10"
-          onClick={() => {
-            setSelectedMethod(null);
-            setSignatureType(null);
-            setUploadedFile(null);
-            setSignatureDataUrl(null);
-            if (fileInputRef.current) {
-              fileInputRef.current.value = "";
-            }
-            if (canvasRef.current) {
-              const ctx = canvasRef.current.getContext("2d");
-              if (ctx) {
-                ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-              }
-            }
-          }}
-        >
-          Change Method
-        </Button>
+      <div>
+        <h2 className="text-xl font-semibold text-white">Signature</h2>
+        <p className="text-sm text-white/70 mt-1">
+          Last step! Add your signature for the form to be complete. The app will not store your signature and will only
+          use it to append to the document.
+        </p>
       </div>
-      
+
       <div className="space-y-4">
         {/* Upload Option */}
         {selectedMethod === "upload" && (
           <div className="space-y-2">
             <Label className="text-white">Upload Signature</Label>
-          <div
-            className={cn(
-              "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors",
-              isDragging
-                ? "border-white bg-white/10"
-                : "border-white/30 hover:border-white/50",
-              signatureType === "upload" && "border-white bg-white/10"
-            )}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileInputChange}
-            />
-            {uploadedFile ? (
-              <div className="space-y-2">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-sm font-medium text-white">{uploadedFile.name}</span>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFile();
-                    }}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
+            <div
+              className={cn(
+                "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors",
+                isDragging ? "border-white bg-white/10" : "border-white/30 hover:border-white/50",
+                signatureType === "upload" && "border-white bg-white/10",
+              )}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileInputChange}
+              />
+              {uploadedFile ? (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-sm font-medium text-white">{uploadedFile.name}</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile();
+                      }}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <img
+                    src={URL.createObjectURL(uploadedFile)}
+                    alt="Uploaded signature"
+                    className="max-h-32 mx-auto rounded"
+                  />
                 </div>
-                <img
-                  src={URL.createObjectURL(uploadedFile)}
-                  alt="Uploaded signature"
-                  className="max-h-32 mx-auto rounded"
-                />
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <Upload className="h-8 w-8 mx-auto text-white/50" />
-                <p className="text-sm text-white/70">Drop Files</p>
-                <p className="text-xs text-white/50">or click to browse</p>
-              </div>
-            )}
-          </div>
+              ) : (
+                <div className="space-y-2">
+                  <Upload className="h-8 w-8 mx-auto text-white/50" />
+                  <p className="text-sm text-white/70">Drop Files</p>
+                  <p className="text-xs text-white/50">or click to browse</p>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -299,36 +265,35 @@ export function Step4Form({ initialValues, onDataChange }: Step4FormProps) {
         {selectedMethod === "draw" && (
           <div className="space-y-2">
             <Label className="text-white">Draw Signature</Label>
-          <div className="border rounded-lg p-4 bg-white">
-            <canvas
-              ref={canvasRef}
-              width={600}
-              height={200}
-              className="border rounded cursor-crosshair w-full max-w-full touch-none"
-              onMouseDown={startDrawing}
-              onMouseMove={draw}
-              onMouseUp={stopDrawing}
-              onMouseLeave={stopDrawing}
-              onTouchStart={startDrawing}
-              onTouchMove={draw}
-              onTouchEnd={stopDrawing}
-            />
-            <div className="flex gap-2 mt-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="border-white text-white hover:bg-white/10 hover:border-white"
-                onClick={clearSignature}
-              >
-                Clear
-              </Button>
+            <div className="border rounded-lg p-4 bg-white">
+              <canvas
+                ref={canvasRef}
+                width={600}
+                height={200}
+                className="border rounded cursor-crosshair w-full max-w-full touch-none"
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+                onTouchStart={startDrawing}
+                onTouchMove={draw}
+                onTouchEnd={stopDrawing}
+              />
+              <div className="flex gap-2 mt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="border-white text-white hover:bg-white/10 hover:border-white"
+                  onClick={clearSignature}
+                >
+                  Clear
+                </Button>
+              </div>
             </div>
-          </div>
           </div>
         )}
       </div>
     </div>
   );
 }
-
