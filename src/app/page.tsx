@@ -5,16 +5,28 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { MultiStepForm } from "@/components/MultiStepForm";
 import { PrivacyInfoBanner } from "@/components/PrivacyInfoBanner";
+import { LivePreview } from "@/components/LivePreview";
+import type { Step1Data } from "@/components/Step1Form";
+import type { Step2Data } from "@/components/Step2Form";
+import type { Step3Data } from "@/components/Step3Form";
+import type { Step4Data } from "@/components/Step4Form";
 
 function HomeContent() {
   const searchParams = useSearchParams();
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
-  const [previousStep, setPreviousStep] = useState(1);
   const [isVictoryMember, setIsVictoryMember] = useState<boolean | null>(null);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const [isFlippingIn, setIsFlippingIn] = useState(false);
-  const [displayImage, setDisplayImage] = useState<string | null>(null);
+  const [formData, setFormData] = useState<{
+    step1: Step1Data | null;
+    step2: Step2Data | null;
+    step3: Step3Data | null;
+    step4: Step4Data | null;
+  }>({
+    step1: null,
+    step2: null,
+    step3: null,
+    step4: null,
+  });
+  const [countriesData, setCountriesData] = useState<Array<{ name: string; code: string }> | null>(null);
 
   // Extract query parameters for pre-filling
   const initialStep1 = {
@@ -24,53 +36,13 @@ function HomeContent() {
     church: searchParams.get("church") || undefined,
   };
 
+  // Load countries data
   useEffect(() => {
-    // Determine which image should be shown based on step
-    const shouldShowPIC = currentStep === 1 || currentStep === 2;
-    const shouldShowSAF = currentStep === 3 || currentStep === 4;
-    const newImage = shouldShowPIC
-      ? "/images/PIC.png"
-      : shouldShowSAF
-        ? isVictoryMember === true
-          ? "/images/SAF_victory.png"
-          : "/images/SAF.png"
-        : null;
-
-    if (!newImage) return;
-
-    // Check if we need to flip (transitioning between PIC and SAF)
-    const wasShowingPIC = previousStep === 1 || previousStep === 2;
-    const isShowingPIC = currentStep === 1 || currentStep === 2;
-    const needsFlip = wasShowingPIC !== isShowingPIC && displayImage !== null;
-
-    if (needsFlip) {
-      // Start flip-out animation
-      setIsFlipping(true);
-      setIsFlippingIn(false);
-
-      // Change image early in flip-out for seamless transition (no pause)
-      setTimeout(() => {
-        setDisplayImage(newImage);
-        setIsFlipping(false);
-        setIsFlippingIn(true);
-
-        // Remove flip-in class after animation completes
-        setTimeout(() => {
-          setIsFlippingIn(false);
-        }, 500);
-      }, 200); // Switch image early for seamless transition
-    } else {
-      // No flip needed, just update the image
-      if (!displayImage || newImage !== displayImage) {
-        setDisplayImage(newImage);
-      }
-      setIsFlipping(false);
-      setIsFlippingIn(false);
-    }
-
-    setPreviousStep(currentStep);
-    setPreviewImage(newImage);
-  }, [currentStep, isVictoryMember]);
+    fetch("/countries.json")
+      .then((res) => res.json())
+      .then((data) => setCountriesData(data))
+      .catch((err) => console.error("Failed to load countries:", err));
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-bc-1">
@@ -94,6 +66,7 @@ function HomeContent() {
             initialStep1={initialStep1}
             onStepChange={setCurrentStep}
             onVictoryMemberChange={setIsVictoryMember}
+            onFormDataChange={setFormData}
           />
 
           {/* Footer */}
@@ -126,15 +99,15 @@ function HomeContent() {
 
       {/* Right Panel - Preview (Desktop Only) */}
       <div className="hidden lg:flex lg:w-2/3 bg-bc-1/20 items-center justify-center p-8">
-        <div className="w-full max-w-4xl flip-container">
-          {displayImage && (
-            <div
-              className={`bg-white rounded-lg shadow-lg p-4 flip-image ${isFlipping ? "flipping" : isFlippingIn ? "flipping-in" : ""}`}
-            >
-              <Image src={displayImage} alt="Preview" width={800} height={1000} className="w-full h-auto" priority />
-            </div>
-          )}
-        </div>
+        <LivePreview
+          currentStep={currentStep}
+          step1Data={formData.step1}
+          step2Data={formData.step2}
+          step3Data={formData.step3}
+          step4Data={formData.step4}
+          isVictoryMember={isVictoryMember}
+          countriesData={countriesData}
+        />
       </div>
     </div>
   );

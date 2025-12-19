@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Step1Form, type Step1Data } from "@/components/Step1Form";
@@ -8,15 +8,23 @@ import { Step2Form, type Step2Data } from "@/components/Step2Form";
 import { Step3Form, type Step3Data } from "@/components/Step3Form";
 import { Step4Form, type Step4Data } from "@/components/Step4Form";
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { generatePIC, generateSAF, downloadBlob } from "@/lib/imageEditor";
+import { accountabilityQuestions } from "@/lib/questions";
 
 interface MultiStepFormProps {
   initialStep1?: Partial<Step1Data>;
   initialStep2?: Partial<Step2Data>;
   onVictoryMemberChange?: (isVictoryMember: boolean | null) => void;
   onStepChange?: (step: number) => void;
+  onFormDataChange?: (data: {
+    step1: Step1Data | null;
+    step2: Step2Data | null;
+    step3: Step3Data | null;
+    step4: Step4Data | null;
+  }) => void;
 }
 
-export function MultiStepForm({ initialStep1, initialStep2, onVictoryMemberChange, onStepChange }: MultiStepFormProps) {
+export function MultiStepForm({ initialStep1, initialStep2, onVictoryMemberChange, onStepChange, onFormDataChange }: MultiStepFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [step1Data, setStep1Data] = useState<Step1Data | null>(null);
   const [step2Data, setStep2Data] = useState<Step2Data | null>(null);
@@ -122,24 +130,63 @@ export function MultiStepForm({ initialStep1, initialStep2, onVictoryMemberChang
     setStep4Data(data);
   };
 
+  // Notify parent of form data changes for live preview
+  useEffect(() => {
+    if (onFormDataChange) {
+      onFormDataChange({
+        step1: step1Data,
+        step2: step2Data,
+        step3: step3Data,
+        step4: step4Data,
+      });
+    }
+  }, [step1Data, step2Data, step3Data, step4Data, onFormDataChange]);
+
   const handleFinish = async () => {
+    if (!step1Data || !step2Data || !step3Data || !step4Data) {
+      console.error("Missing form data");
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Call your submission function here (empty for now)
-    const submitForm = async () => {
-      // TODO: Add your form submission logic here
-      return new Promise((resolve) => {
-        setTimeout(() => resolve(true), 2000); // Simulate API call
-      });
-    };
-
     try {
-      await submitForm();
+      // Load countries data
+      const countriesResponse = await fetch("/countries.json");
+      const countriesData = await countriesResponse.json();
+
+      // Convert uploaded file to data URL if needed
+      let signatureDataUrl = step4Data.signatureDataUrl;
+      if (step4Data.uploadedFile && !signatureDataUrl) {
+        signatureDataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(step4Data.uploadedFile!);
+        });
+      }
+
+      // Prepare Step 4 data with converted signature
+      const step4DataWithSignature = {
+        ...step4Data,
+        signatureDataUrl: signatureDataUrl || step4Data.signatureDataUrl,
+      };
+
+      // Generate PIC image
+      const picBlob = await generatePIC(step1Data, step2Data, countriesData);
+      downloadBlob(picBlob, "PIC.png");
+
+      // Generate SAF image
+      const safBlob = await generateSAF(step2Data, step3Data, step4DataWithSignature, accountabilityQuestions);
+      const safFilename = step2Data.isVictoryMember === true ? "SAF_victory.png" : "SAF.png";
+      downloadBlob(safBlob, safFilename);
+
       setIsSubmitting(false);
       setIsComplete(true);
     } catch (error) {
-      console.error("Submission error:", error);
+      console.error("Error generating images:", error);
       setIsSubmitting(false);
+      alert("An error occurred while generating the forms. Please try again.");
     }
   };
 
