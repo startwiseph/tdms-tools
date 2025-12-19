@@ -5,8 +5,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   manifest: "/manifest.json",
   title: "TDMS Tools | PIC & SAF Generator",
+  description: "Help mission partners fill out PIC & SAF documents for Ten Days missioners.",
   openGraph: {
     title: "TDMS Tools | PIC & SAF Generator",
+    description: "Help mission partners fill out PIC & SAF documents for Ten Days missioners.",
     images: [
       {
         url: "https://i.imgur.com/cPUQ5PW.png",
@@ -18,6 +20,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    description: "Help mission partners fill out PIC & SAF documents for Ten Days missioners.",
     images: ["https://i.imgur.com/cPUQ5PW.png"],
   },
 };
