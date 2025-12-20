@@ -176,6 +176,9 @@ export function MultiStepForm({ initialStep1, initialStep2, onVictoryMemberChang
       const picBlob = await generatePIC(step1Data, step2Data, countriesData);
       downloadBlob(picBlob, "PIC.png");
 
+      // Add delay to ensure browser permission for multiple downloads
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Generate SAF image
       const safBlob = await generateSAF(step2Data, step3Data, step4DataWithSignature, accountabilityQuestions);
       // Always use SAF.png as filename regardless of which base image was used
