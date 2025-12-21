@@ -26,19 +26,19 @@ The following are the frameworks and tools that you must be familiar with to be 
 ```bash
 git clone https://github.com/startwiseph/tdms-tools.git
 ```
-
+<!-- 
 2. Create a `.env.local` file at the root of the project with the contents of `.env.example` and fill in the keys.
 
 > [!IMPORTANT]
-> The project will not run properly without the environment variables. Seek assistance from other developers in the team if you don't have the necessary values for the variables.
+> The project will not run properly without the environment variables. Seek assistance from other developers in the team if you don't have the necessary values for the variables. -->
 
-3. Install dependencies:
+2. Install dependencies:
 
 ```bash
 npm install    # or bun install
 ```
 
-4. Run the development server:
+3. Run the development server:
 
 ```bash
 npm run dev    # or bun dev
