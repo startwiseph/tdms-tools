@@ -62,7 +62,7 @@ export const SAF_POSITIONS: SAFPositions = {
 
   canceledGeneralFund: { x: 0.695, y: 0.572 },
 
-  offset: { x: 0, y: 0 },
+  offset: { x: 0, y: -0.08 },
   signature: { x: 0.58, y: 0.71, width: 0.50, height: 0.2 },
   partnerNameUnderSignature: { x: 0.817, y: 0.875 },
 };

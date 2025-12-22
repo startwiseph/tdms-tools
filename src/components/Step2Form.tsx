@@ -30,6 +30,32 @@ export function Step2Form({ initialValues, onDataChange }: Step2FormProps) {
   const [localChurch, setLocalChurch] = useState(initialValues?.localChurch || "");
   const [isVictoryMember, setIsVictoryMember] = useState<boolean | null>(initialValues?.isVictoryMember ?? null);
 
+  // Sync state when initialValues change
+  useEffect(() => {
+    if (initialValues?.partnerName !== undefined && initialValues.partnerName !== partnerName) {
+      setPartnerName(initialValues.partnerName);
+    }
+    if (initialValues?.amount !== undefined && initialValues.amount !== amount) {
+      setAmount(initialValues.amount);
+    }
+    if (initialValues?.denomination !== undefined && initialValues.denomination !== denomination) {
+      setDenomination(initialValues.denomination);
+    }
+    if (initialValues?.email !== undefined && initialValues.email !== email) {
+      setEmail(initialValues.email);
+    }
+    if (initialValues?.mobile !== undefined && initialValues.mobile !== mobile) {
+      setMobile(initialValues.mobile);
+    }
+    if (initialValues?.localChurch !== undefined && initialValues.localChurch !== localChurch) {
+      setLocalChurch(initialValues.localChurch);
+    }
+    if (initialValues?.isVictoryMember !== undefined && initialValues.isVictoryMember !== isVictoryMember) {
+      setIsVictoryMember(initialValues.isVictoryMember);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues]);
+
   useEffect(() => {
     if (onDataChange) {
       onDataChange({

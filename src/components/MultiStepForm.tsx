@@ -226,9 +226,9 @@ export function MultiStepForm({ initialStep1, initialStep2, onVictoryMemberChang
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <Step1Form initialValues={initialStep1} onDataChange={handleStep1DataChange} />;
+        return <Step1Form initialValues={step1Data || initialStep1} onDataChange={handleStep1DataChange} />;
       case 2:
-        return <Step2Form initialValues={initialStep2} onDataChange={handleStep2DataChange} />;
+        return <Step2Form initialValues={step2Data || initialStep2} onDataChange={handleStep2DataChange} />;
       case 3:
         return (
           <Step3Form
