@@ -297,6 +297,7 @@ export function LivePreview({
         setIsFlipping(true);
         setIsFlippingIn(false);
 
+        // Wait for flip-out animation to complete (500ms) before switching image
         setTimeout(() => {
           setBaseImage(img);
           setIsFlipping(false);
@@ -304,7 +305,7 @@ export function LivePreview({
           setTimeout(() => {
             setIsFlippingIn(false);
           }, 500);
-        }, 200);
+        }, 1);
       } else {
         setBaseImage(img);
         setIsFlipping(false);
