@@ -36,28 +36,35 @@ export interface SAFPositions {
 }
 
 // Default positions (to be adjusted via trial and error)
-// These are relative positions that will be scaled based on image dimensions
+// These are relative positions (0-1) that will be scaled based on image dimensions
+// All coordinates represent CENTER points of the elements (text, checkboxes, signature areas)
 export const PIC_POSITIONS: PICPositions = {
-  partnerName: { x: 0.15, y: 0.29 }, // 15% from left, 25% from top
-  email: { x: 0.08, y: 0.45 },
-  mobile: { x: 0.15, y: 0.62 },
-  localChurch: { x: 0.15, y: 0.78 },
-  missionerName: { x: 0.6, y: 0.29 },
-  amount: { x: 0.6, y: 0.45 },
-  nation: { x: 0.6, y: 0.62 },
-  travelDate: { x: 0.85, y: 0.62 },
-  sendingChurch: { x: 0.64, y: 0.78 },
+  partnerName: { x: 0.215, y: 0.32 }, // 15% from left, 25% from top
+  email: { x: 0.215, y: 0.485 },
+  mobile: { x: 0.215, y: 0.645 },
+  localChurch: { x: 0.215, y: 0.802 },
+
+  missionerName: { x: 0.70, y: 0.32 },
+  amount: { x: 0.69, y: 0.485 },
+  nation: { x: 0.66, y: 0.645 },
+  travelDate: { x: 0.90, y: 0.645 },
+  sendingChurch: { x: 0.696, y: 0.802 },
 };
 
+// All coordinates represent CENTER points of the elements
+// For signature: x, y represent the center of the signature area
 export const SAF_POSITIONS: SAFPositions = {
-  unableToGoTeamFund: { x: 0.033, y: 0.593 },
-  unableToGoGeneralFund: { x: 0.033, y: 0.647 },
-  reroutedRetain: { x: 0.35, y: 0.555 },
-  reroutedGeneralFund: { x: 0.35, y: 0.61 },
-  canceledGeneralFund: { x: 0.687, y: 0.555 },
-  offset: { x: 0, y: -0.08 },
-  signature: { x: 0.58, y: 0.70, width: 0.50, height: 0.2 },
-  partnerNameUnderSignature: { x: 0.7, y: 0.845 },
+  unableToGoTeamFund: { x: 0.04, y: 0.608 },
+  unableToGoGeneralFund: { x: 0.04, y: 0.608 + 0.059 },
+
+  reroutedRetain: { x: 0.357, y: 0.57 },
+  reroutedGeneralFund: { x: 0.357, y: 0.63 },
+
+  canceledGeneralFund: { x: 0.695, y: 0.572 },
+
+  offset: { x: 0, y: 0 },
+  signature: { x: 0.58, y: 0.71, width: 0.50, height: 0.2 },
+  partnerNameUnderSignature: { x: 0.817, y: 0.875 },
 };
 
 // Text styling
@@ -81,6 +88,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 
 /**
  * Draw text on canvas with word wrapping
+ * x, y are center coordinates
  */
 function drawText(
   ctx: CanvasRenderingContext2D,
@@ -90,19 +98,27 @@ function drawText(
   maxWidth?: number,
   fontSize: number = FONT_SIZE_PIC,
 ) {
+  if (!text) return;
+  
   ctx.fillStyle = TEXT_COLOR;
   ctx.font = `${fontSize}px ${FONT_FAMILY}`;
   ctx.textBaseline = "top";
 
   if (!maxWidth) {
-    ctx.fillText(text, x, y);
+    // Measure text to center it
+    const metrics = ctx.measureText(text);
+    const textWidth = metrics.width;
+    const textHeight = fontSize; // Approximate height for single line
+    const drawX = x - textWidth / 2;
+    const drawY = y - textHeight / 2;
+    ctx.fillText(text, drawX, drawY);
     return;
   }
 
-  // Simple word wrapping
+  // Simple word wrapping - calculate total dimensions first
   const words = text.split(" ");
+  const lines: string[] = [];
   let line = "";
-  let lineY = y;
 
   for (let i = 0; i < words.length; i++) {
     const testLine = line + words[i] + " ";
@@ -110,18 +126,41 @@ function drawText(
     const testWidth = metrics.width;
 
     if (testWidth > maxWidth && i > 0) {
-      ctx.fillText(line, x, lineY);
+      lines.push(line.trim());
       line = words[i] + " ";
-      lineY += fontSize * 1.2; // Line height
     } else {
       line = testLine;
     }
   }
-  ctx.fillText(line, x, lineY);
+  lines.push(line.trim());
+
+  // Calculate total text dimensions
+  let maxLineWidth = 0;
+  for (const line of lines) {
+    const metrics = ctx.measureText(line);
+    if (metrics.width > maxLineWidth) {
+      maxLineWidth = metrics.width;
+    }
+  }
+  const totalHeight = lines.length * fontSize * 1.2;
+  const textWidth = maxLineWidth;
+  const textHeight = totalHeight;
+
+  // Calculate starting position (top-left) from center
+  const startX = x - textWidth / 2;
+  const startY = y - textHeight / 2;
+
+  // Draw each line
+  let lineY = startY;
+  for (const lineText of lines) {
+    ctx.fillText(lineText, startX, lineY);
+    lineY += fontSize * 1.2; // Line height
+  }
 }
 
 /**
  * Draw a checkbox using check.png image
+ * x, y are center coordinates
  */
 function drawCheckbox(
   ctx: CanvasRenderingContext2D,
@@ -132,7 +171,10 @@ function drawCheckbox(
 ) {
   if (checked && checkImage) {
     const size = 24; // Increased check image size
-    ctx.drawImage(checkImage, x, y, size, size);
+    // Adjust to top-left from center
+    const drawX = x - size / 2;
+    const drawY = y - size / 2;
+    ctx.drawImage(checkImage, drawX, drawY, size, size);
   }
 }
 
@@ -179,6 +221,7 @@ function thickenSignature(imageData: ImageData, thickness: number = 1): ImageDat
 
 /**
  * Draw signature on canvas with thickened strokes, maintaining aspect ratio
+ * x, y are center coordinates of the signature area
  */
 function drawSignature(
   ctx: CanvasRenderingContext2D,
@@ -238,8 +281,12 @@ function drawSignature(
       // Put the thickened image data back
       tempCtx.putImageData(thickenedData, 0, 0);
       
+      // Calculate top-left position from center coordinates
+      const areaTopLeftX = x - width / 2;
+      const areaTopLeftY = y - height / 2;
+      
       // Draw the processed signature to the main canvas, centered in the signature area
-      ctx.drawImage(tempCanvas, x + offsetX, y + offsetY);
+      ctx.drawImage(tempCanvas, areaTopLeftX + offsetX, areaTopLeftY + offsetY);
       resolve();
     };
     img.onerror = reject;
@@ -442,8 +489,9 @@ export async function generateSAF(
       y: SAF_POSITIONS.canceledGeneralFund.y * canvas.height + offset.y,
     },
     signature: {
-      x: SAF_POSITIONS.signature.x * canvas.width,
-      y: SAF_POSITIONS.signature.y * canvas.height,
+      // Convert from top-left to center coordinates
+      x: (SAF_POSITIONS.signature.x + SAF_POSITIONS.signature.width / 2) * canvas.width,
+      y: (SAF_POSITIONS.signature.y + SAF_POSITIONS.signature.height / 2) * canvas.height,
       width: SAF_POSITIONS.signature.width * canvas.width,
       height: SAF_POSITIONS.signature.height * canvas.height,
     },

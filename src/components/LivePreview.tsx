@@ -20,6 +20,7 @@ interface LivePreviewProps {
 
 /**
  * Draw text on canvas with word wrapping
+ * x, y are center coordinates
  */
 function drawText(
   ctx: CanvasRenderingContext2D,
@@ -36,14 +37,20 @@ function drawText(
   ctx.textBaseline = "top";
 
   if (!maxWidth) {
-    ctx.fillText(text, x, y);
+    // Measure text to center it
+    const metrics = ctx.measureText(text);
+    const textWidth = metrics.width;
+    const textHeight = fontSize; // Approximate height for single line
+    const drawX = x - textWidth / 2;
+    const drawY = y - textHeight / 2;
+    ctx.fillText(text, drawX, drawY);
     return;
   }
 
-  // Simple word wrapping
+  // Simple word wrapping - calculate total dimensions first
   const words = text.split(" ");
+  const lines: string[] = [];
   let line = "";
-  let lineY = y;
 
   for (let i = 0; i < words.length; i++) {
     const testLine = line + words[i] + " ";
@@ -51,18 +58,41 @@ function drawText(
     const testWidth = metrics.width;
 
     if (testWidth > maxWidth && i > 0) {
-      ctx.fillText(line, x, lineY);
+      lines.push(line.trim());
       line = words[i] + " ";
-      lineY += fontSize * 1.2; // Line height
     } else {
       line = testLine;
     }
   }
-  ctx.fillText(line, x, lineY);
+  lines.push(line.trim());
+
+  // Calculate total text dimensions
+  let maxLineWidth = 0;
+  for (const line of lines) {
+    const metrics = ctx.measureText(line);
+    if (metrics.width > maxLineWidth) {
+      maxLineWidth = metrics.width;
+    }
+  }
+  const totalHeight = lines.length * fontSize * 1.2;
+  const textWidth = maxLineWidth;
+  const textHeight = totalHeight;
+
+  // Calculate starting position (top-left) from center
+  const startX = x - textWidth / 2;
+  const startY = y - textHeight / 2;
+
+  // Draw each line
+  let lineY = startY;
+  for (const lineText of lines) {
+    ctx.fillText(lineText, startX, lineY);
+    lineY += fontSize * 1.2; // Line height
+  }
 }
 
 /**
  * Draw a checkbox using check.png image
+ * x, y are center coordinates
  */
 function drawCheckbox(
   ctx: CanvasRenderingContext2D,
@@ -73,7 +103,10 @@ function drawCheckbox(
 ) {
   if (checked && checkImage) {
     const size = 24; // Increased check image size
-    ctx.drawImage(checkImage, x, y, size, size);
+    // Adjust to top-left from center
+    const drawX = x - size / 2;
+    const drawY = y - size / 2;
+    ctx.drawImage(checkImage, drawX, drawY, size, size);
   }
 }
 
@@ -120,6 +153,7 @@ function thickenSignature(imageData: ImageData, thickness: number = 1): ImageDat
 
 /**
  * Draw signature on canvas with thickened strokes, maintaining aspect ratio
+ * x, y are center coordinates of the signature area
  */
 function drawSignature(
   ctx: CanvasRenderingContext2D,
@@ -179,8 +213,12 @@ function drawSignature(
       // Put the thickened image data back
       tempCtx.putImageData(thickenedData, 0, 0);
       
+      // Calculate top-left position from center coordinates
+      const areaTopLeftX = x - width / 2;
+      const areaTopLeftY = y - height / 2;
+      
       // Draw the processed signature to the main canvas, centered in the signature area
-      ctx.drawImage(tempCanvas, x + offsetX, y + offsetY);
+      ctx.drawImage(tempCanvas, areaTopLeftX + offsetX, areaTopLeftY + offsetY);
       resolve();
     };
     img.onerror = reject;
@@ -408,8 +446,9 @@ export function LivePreview({
           y: SAF_POSITIONS.canceledGeneralFund.y * canvas.height + offset.y,
         },
         signature: {
-          x: SAF_POSITIONS.signature.x * canvas.width,
-          y: SAF_POSITIONS.signature.y * canvas.height,
+          // Convert from top-left to center coordinates
+          x: (SAF_POSITIONS.signature.x + SAF_POSITIONS.signature.width / 2) * canvas.width,
+          y: (SAF_POSITIONS.signature.y + SAF_POSITIONS.signature.height / 2) * canvas.height,
           width: SAF_POSITIONS.signature.width * canvas.width,
           height: SAF_POSITIONS.signature.height * canvas.height,
         },
