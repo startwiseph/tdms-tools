@@ -1,13 +1,18 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 const COUNTRIES_URL = "/countries.json";
@@ -48,6 +53,136 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
   const [nationSearchOpen, setNationSearchOpen] = useState(false);
   const [nationSearchValue, setNationSearchValue] = useState("");
 
+  // Helper function to get days in a month
+  const getDaysInMonth = (month: number, year: number) => {
+    return new Date(year, month, 0).getDate();
+  };
+
+  // Initialize month, day, year from date
+  const getDateParts = (dateValue: Date | undefined) => {
+    if (!dateValue) return { month: "", day: "", year: "" };
+    return {
+      month: (dateValue.getMonth() + 1).toString(),
+      day: dateValue.getDate().toString(),
+      year: dateValue.getFullYear().toString(),
+    };
+  };
+
+  const [month, setMonth] = useState(() => getDateParts(date).month);
+  const [day, setDay] = useState(() => getDateParts(date).day);
+  const [year, setYear] = useState(() => getDateParts(date).year);
+  const [hasInvalidDateAttempt, setHasInvalidDateAttempt] = useState(false);
+
+  // Get current date for validation
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  // Generate year options (current year to +5 years ahead, so 6 years total)
+  const yearOptions = useMemo(() => {
+    const currentYear = new Date().getFullYear(); // Always get current year dynamically
+    const years = [];
+    for (let i = 0; i <= 5; i++) {
+      years.push((currentYear + i).toString());
+    }
+    return years;
+  }, []); // Empty deps - always recalculate to get current year
+
+  // Generate month options
+  const monthOptions = useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => {
+      const monthNum = i + 1;
+      const monthName = new Date(2000, i, 1).toLocaleString("default", { month: "long" });
+      return { value: monthNum.toString(), label: monthName };
+    });
+  }, []);
+
+  // Generate day options based on selected month and year
+  const dayOptions = useMemo(() => {
+    if (!month || !year) return [];
+    const monthNum = parseInt(month);
+    const yearNum = parseInt(year);
+    const daysInMonth = getDaysInMonth(monthNum, yearNum);
+    return Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString());
+  }, [month, year]);
+
+  // Adjust day if it becomes invalid when month/year changes
+  useEffect(() => {
+    if (month && year && day) {
+      const monthNum = parseInt(month);
+      const yearNum = parseInt(year);
+      const dayNum = parseInt(day);
+      const daysInMonth = getDaysInMonth(monthNum, yearNum);
+      
+      // If selected day exceeds days in month, adjust to last day of month
+      if (dayNum > daysInMonth) {
+        setDay(daysInMonth.toString());
+      }
+    }
+  }, [month, year, day]);
+
+  // Update date when month, day, or year changes
+  useEffect(() => {
+    if (month && day && year) {
+      const monthNum = parseInt(month);
+      const dayNum = parseInt(day);
+      const yearNum = parseInt(year);
+      const newDate = new Date(yearNum, monthNum - 1, dayNum);
+      newDate.setHours(0, 0, 0, 0);
+
+      // Validate: if date is in the past, don't set it and reset all selects
+      if (newDate >= today) {
+        setDate(newDate);
+        // Clear the invalid date attempt flag when valid date is selected
+        setHasInvalidDateAttempt(false);
+      } else {
+        setDate(undefined);
+        // Set flag to show error message
+        setHasInvalidDateAttempt(true);
+        // Reset all selects to force user to select again
+        setMonth("");
+        setDay("");
+        setYear("");
+      }
+    } else {
+      setDate(undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [month, day, year]);
+
+  // Sync month, day, year when date changes from external source
+  useEffect(() => {
+    if (date) {
+      const parts = getDateParts(date);
+      if (parts.month !== month) setMonth(parts.month);
+      if (parts.day !== day) setDay(parts.day);
+      if (parts.year !== year) setYear(parts.year);
+    } else if (!date && (month || day || year)) {
+      // Clear selects if date is cleared
+      setMonth("");
+      setDay("");
+      setYear("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date]);
+
+  // Check if the selected date is invalid (in the past) or if we have a pending invalid attempt
+  const isDateInvalid = useMemo(() => {
+    // Show error if we have a pending invalid date attempt
+    if (hasInvalidDateAttempt) return true;
+    
+    // Check if current selection is invalid
+    if (!month || !day || !year) return false;
+    const monthNum = parseInt(month);
+    const dayNum = parseInt(day);
+    const yearNum = parseInt(year);
+    const selectedDate = new Date(yearNum, monthNum - 1, dayNum);
+    selectedDate.setHours(0, 0, 0, 0);
+    return selectedDate < today;
+  }, [month, day, year, today, hasInvalidDateAttempt]);
+
   useEffect(() => {
     fetch(COUNTRIES_URL)
       .then((res) => res.json())
@@ -87,8 +222,22 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
       // Only update if the date actually changed
       if (dateToSet?.getTime() !== date?.getTime()) {
         setDate(dateToSet);
+        // Sync month, day, year when date is set
+        if (dateToSet) {
+          const parts = getDateParts(dateToSet);
+          setMonth(parts.month);
+          setDay(parts.day);
+          setYear(parts.year);
+        } else {
+          setMonth("");
+          setDay("");
+          setYear("");
+        }
       } else if (!dateToSet && date !== undefined) {
         setDate(undefined);
+        setMonth("");
+        setDay("");
+        setYear("");
       }
     }
     if (initialValues?.church !== undefined && initialValues.church !== church) {
@@ -188,35 +337,62 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="travel-date">Travel Date</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              id="travel-date"
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal hover:bg-white hover:border-bc-1/30",
-                !date && "text-bc-3",
-              )}
-            >
-              <CalendarIcon className={cn("mr-2 h-4 w-4", !date ? "text-bc-3" : "")} />
-              {date ? format(date, "PPP") : <span className="text-bc-3">Pick a date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              disabled={(date) => {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                return date < today;
-              }}
-              className="rounded-md border w-[350px]"
-            />
-          </PopoverContent>
-        </Popover>
+        <Label htmlFor="travel-date" className={cn(isDateInvalid && "text-yellow-400")}>
+          {isDateInvalid ? "Travel Date - You can't enter a past date" : "Travel Date"}
+        </Label>
+        <div className="grid grid-cols-3 gap-2">
+          <div className="space-y-1">
+            <Label htmlFor="travel-month" className="text-xs text-white/70">
+              Month
+            </Label>
+            <Select value={month} onValueChange={setMonth}>
+              <SelectTrigger id="travel-month" className="hover:bg-white hover:border-bc-1/30">
+                <SelectValue placeholder="Month" />
+              </SelectTrigger>
+              <SelectContent className="max-h-[300px]">
+                {monthOptions.map((monthOption) => (
+                  <SelectItem key={monthOption.value} value={monthOption.value}>
+                    {monthOption.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="travel-day" className="text-xs text-white/70">
+              Day
+            </Label>
+            <Select value={day} onValueChange={setDay} disabled={!month || !year}>
+              <SelectTrigger id="travel-day" className="hover:bg-white hover:border-bc-1/30">
+                <SelectValue placeholder="Day" />
+              </SelectTrigger>
+              <SelectContent className="max-h-[300px]">
+                {dayOptions.map((dayOption) => (
+                  <SelectItem key={dayOption} value={dayOption}>
+                    {dayOption}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="travel-year" className="text-xs text-white/70">
+              Year
+            </Label>
+            <Select value={year} onValueChange={setYear}>
+              <SelectTrigger id="travel-year" className="hover:bg-white hover:border-bc-1/30">
+                <SelectValue placeholder="Year" />
+              </SelectTrigger>
+              <SelectContent>
+                {yearOptions.map((yearOption) => (
+                  <SelectItem key={yearOption} value={yearOption}>
+                    {yearOption}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-2">
