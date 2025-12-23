@@ -41,9 +41,10 @@ function HomeContent() {
     return {
       missionerName: nameParam || undefined,
       nation: nationParam || undefined,
-      date: dateParam ? new Date(dateParam) : undefined,
+      // Keep date as string to avoid hydration mismatch - Step1Form will convert it to Date
+      date: dateParam || undefined,
       church: churchParam || undefined,
-    };
+    } as Partial<Step1Data> & { date?: string | Date };
   }, [nameParam, nationParam, dateParam, churchParam]);
 
   // Clear URL parameters after reading them (only once)
