@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://i.imgur.com/HeqsMeo.png" alt="ENC Repo Banner" width="1000"/>
+  <img src="https://i.imgur.com/Zi8PYFF.png" alt="ENC Repo Banner" width="1000"/>
 </p>
 
 # TDMS Tools
