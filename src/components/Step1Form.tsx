@@ -255,14 +255,14 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Missioner Information</h2>
+        <h2 className="text-xl font-semibold text-white">Missioner Information</h2>
         <p className="text-sm text-white/80 mt-1">
           Please enter the details of the missioner you will support along with their travel details.
         </p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="missioner-name">Missioner&apos;s Name</Label>
+        <Label htmlFor="missioner-name" className="text-white">Missioner&apos;s Name</Label>
         <Input
           id="missioner-name"
           value={missionerName}
@@ -272,7 +272,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="nation">Nation</Label>
+        <Label htmlFor="nation" className="text-white">Nation</Label>
         <Popover open={nationSearchOpen} onOpenChange={setNationSearchOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -331,12 +331,12 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="travel-date" className={cn(isDateInvalid && "text-yellow-400")}>
+        <Label htmlFor="travel-date" className={cn("text-white", isDateInvalid && "text-yellow-400")}>
           {isDateInvalid ? "Travel Date - You can't enter a past date" : "Travel Date"}
         </Label>
         <div className="grid grid-cols-3 gap-2">
           <div className="space-y-1">
-            <Label htmlFor="travel-year" className="text-xs text-white/70">
+            <Label htmlFor="travel-year" className="text-xs text-white">
               Year
             </Label>
             <Select value={year} onValueChange={setYear}>
@@ -353,7 +353,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
             </Select>
           </div>
           <div className="space-y-1">
-            <Label htmlFor="travel-month" className="text-xs text-white/70">
+            <Label htmlFor="travel-month" className="text-xs text-white">
               Month
             </Label>
             <Select value={month} onValueChange={setMonth}>
@@ -370,7 +370,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
             </Select>
           </div>
           <div className="space-y-1">
-            <Label htmlFor="travel-day" className="text-xs text-white/70">
+            <Label htmlFor="travel-day" className="text-xs text-white">
               Day
             </Label>
             <Select value={day} onValueChange={setDay} disabled={!month || !year}>
@@ -390,7 +390,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="sending-church">Sending Church</Label>
+        <Label htmlFor="sending-church" className="text-white">Sending Church</Label>
         <Input
           id="sending-church"
           value={church}

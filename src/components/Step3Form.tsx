@@ -34,7 +34,7 @@ export function Step3Form({ initialValues, onDataChange }: Step3FormProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Support Accountability Form</h2>
+        <h2 className="text-xl font-semibold text-white">Support Accountability Form</h2>
         <p className="text-sm text-white/80 mt-1">
           I confirm the options I&apos;ve selected below as my instructions to the Gift Processing Office on how to
           handle my support in each specified scenario.
@@ -45,7 +45,7 @@ export function Step3Form({ initialValues, onDataChange }: Step3FormProps) {
         {accountabilityQuestions.map((questionData, index) => (
           <div key={index}>
             <div className="space-y-4">
-              <Label className="text-base font-semibold">
+              <Label className="text-base font-semibold text-white">
                 {index + 1}. {questionData.question.split("*")[0]}
                 {questionData.question.includes("*") && <span className="text-white">*</span>}
               </Label>
@@ -57,7 +57,7 @@ export function Step3Form({ initialValues, onDataChange }: Step3FormProps) {
                 {questionData.choices.map((choice, choiceIndex) => (
                   <div key={choiceIndex} className="flex items-center space-x-1 ml-5">
                     <RadioGroupItem value={choice} id={`q${index}-c${choiceIndex}`} />
-                    <Label htmlFor={`q${index}-c${choiceIndex}`} className="font-normal cursor-pointer ml-1">
+                    <Label htmlFor={`q${index}-c${choiceIndex}`} className="font-normal cursor-pointer ml-1 text-white">
                       {choice}
                     </Label>
                   </div>
