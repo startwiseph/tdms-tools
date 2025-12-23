@@ -31,7 +31,7 @@ function drawText(
   fontSize: number = FONT_SIZE_PIC,
 ) {
   if (!text) return;
-  
+
   ctx.fillStyle = TEXT_COLOR;
   ctx.font = `${fontSize}px Arial, Helvetica, sans-serif`;
   ctx.textBaseline = "top";
@@ -197,7 +197,7 @@ function drawSignature(
       tempCanvas.width = Math.ceil(scaledWidth);
       tempCanvas.height = Math.ceil(scaledHeight);
       const tempCtx = tempCanvas.getContext("2d");
-      
+
       if (!tempCtx) {
         reject(new Error("Could not get temporary canvas context"));
         return;
@@ -205,18 +205,18 @@ function drawSignature(
 
       // Draw the signature to the temporary canvas at original aspect ratio
       tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
-      
+
       // Get image data and thicken the strokes
       const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
       const thickenedData = thickenSignature(imageData, 1);
-      
+
       // Put the thickened image data back
       tempCtx.putImageData(thickenedData, 0, 0);
-      
+
       // Calculate top-left position from center coordinates
       const areaTopLeftX = x - width / 2;
       const areaTopLeftY = y - height / 2;
-      
+
       // Draw the processed signature to the main canvas, centered in the signature area
       ctx.drawImage(tempCanvas, areaTopLeftX + offsetX, areaTopLeftY + offsetY);
       resolve();
@@ -334,7 +334,8 @@ export function LivePreview({
 
     if (shouldShowPIC) {
       // Draw PIC form data (show whatever data is available, even if incomplete)
-      const country = step1Data?.nation && countriesData ? countriesData.find((c) => c.code === step1Data.nation) : null;
+      const country =
+        step1Data?.nation && countriesData ? countriesData.find((c) => c.code === step1Data.nation) : null;
       const nationName = country?.name || step1Data?.nation || "";
 
       const formattedDate = step1Data?.date
@@ -387,7 +388,14 @@ export function LivePreview({
 
       // Draw Partner section (show even if step2Data is null)
       if (step2Data?.partnerName) {
-        drawText(ctx, step2Data.partnerName, positions.partnerName.x, positions.partnerName.y, canvas.width * 0.25, FONT_SIZE_PIC);
+        drawText(
+          ctx,
+          step2Data.partnerName,
+          positions.partnerName.x,
+          positions.partnerName.y,
+          canvas.width * 0.25,
+          FONT_SIZE_PIC,
+        );
       }
       if (step2Data?.email) {
         drawText(ctx, step2Data.email, positions.email.x, positions.email.y, canvas.width * 0.25, FONT_SIZE_PIC);
@@ -396,12 +404,26 @@ export function LivePreview({
         drawText(ctx, step2Data.mobile, positions.mobile.x, positions.mobile.y, canvas.width * 0.25, FONT_SIZE_PIC);
       }
       if (step2Data?.localChurch) {
-        drawText(ctx, step2Data.localChurch, positions.localChurch.x, positions.localChurch.y, canvas.width * 0.25, FONT_SIZE_PIC);
+        drawText(
+          ctx,
+          step2Data.localChurch,
+          positions.localChurch.x,
+          positions.localChurch.y,
+          canvas.width * 0.25,
+          FONT_SIZE_PIC,
+        );
       }
 
       // Draw Recipient section (show even if step1Data is null)
       if (step1Data?.missionerName) {
-        drawText(ctx, step1Data.missionerName, positions.missionerName.x, positions.missionerName.y, canvas.width * 0.25, FONT_SIZE_PIC);
+        drawText(
+          ctx,
+          step1Data.missionerName,
+          positions.missionerName.x,
+          positions.missionerName.y,
+          canvas.width * 0.25,
+          FONT_SIZE_PIC,
+        );
       }
       if (formattedAmount) {
         drawText(ctx, formattedAmount, positions.amount.x, positions.amount.y, canvas.width * 0.25, FONT_SIZE_PIC);
@@ -410,19 +432,34 @@ export function LivePreview({
         drawText(ctx, nationName, positions.nation.x, positions.nation.y, canvas.width * 0.25, FONT_SIZE_PIC);
       }
       if (formattedDate) {
-        drawText(ctx, formattedDate, positions.travelDate.x, positions.travelDate.y, canvas.width * 0.25, FONT_SIZE_PIC);
+        drawText(
+          ctx,
+          formattedDate,
+          positions.travelDate.x,
+          positions.travelDate.y,
+          canvas.width * 0.25,
+          FONT_SIZE_PIC,
+        );
       }
       if (step1Data?.church) {
-        drawText(ctx, step1Data.church, positions.sendingChurch.x, positions.sendingChurch.y, canvas.width * 0.25, FONT_SIZE_PIC);
+        drawText(
+          ctx,
+          step1Data.church,
+          positions.sendingChurch.x,
+          positions.sendingChurch.y,
+          canvas.width * 0.25,
+          FONT_SIZE_PIC,
+        );
       }
     } else if (shouldShowSAF) {
       // Apply offset only if NOT a Victory member (using SAF.png)
-      const offset = isVictoryMember !== true 
-        ? { 
-            x: SAF_POSITIONS.offset.x * canvas.width, 
-            y: SAF_POSITIONS.offset.y * canvas.height 
-          }
-        : { x: 0, y: 0 };
+      const offset =
+        isVictoryMember !== true
+          ? {
+              x: SAF_POSITIONS.offset.x * canvas.width,
+              y: SAF_POSITIONS.offset.y * canvas.height,
+            }
+          : { x: 0, y: 0 };
 
       // Draw SAF form data (apply offset to checkboxes only)
       const positions = {
@@ -469,7 +506,13 @@ export function LivePreview({
         const isTeamFund = answer0 === question0.choices[0];
         const isGeneralFund = answer0 === question0.choices[1];
         drawCheckbox(ctx, positions.unableToGoTeamFund.x, positions.unableToGoTeamFund.y, isTeamFund, checkImage);
-        drawCheckbox(ctx, positions.unableToGoGeneralFund.x, positions.unableToGoGeneralFund.y, isGeneralFund, checkImage);
+        drawCheckbox(
+          ctx,
+          positions.unableToGoGeneralFund.x,
+          positions.unableToGoGeneralFund.y,
+          isGeneralFund,
+          checkImage,
+        );
       }
 
       if (answer1) {
@@ -500,10 +543,28 @@ export function LivePreview({
 
       // Draw partner name under signature
       if (step2Data?.partnerName) {
-        drawText(ctx, step2Data.partnerName, positions.partnerNameUnderSignature.x, positions.partnerNameUnderSignature.y, canvas.width * 0.25, FONT_SIZE_SAF);
+        drawText(
+          ctx,
+          step2Data.partnerName,
+          positions.partnerNameUnderSignature.x,
+          positions.partnerNameUnderSignature.y,
+          canvas.width * 0.25,
+          FONT_SIZE_SAF,
+        );
       }
     }
-  }, [baseImage, checkImage, shouldShowPIC, shouldShowSAF, step1Data, step2Data, step3Data, step4Data, countriesData, signatureDataUrl]);
+  }, [
+    baseImage,
+    checkImage,
+    shouldShowPIC,
+    shouldShowSAF,
+    step1Data,
+    step2Data,
+    step3Data,
+    step4Data,
+    countriesData,
+    signatureDataUrl,
+  ]);
 
   if (!imagePath) return null;
 
@@ -512,13 +573,8 @@ export function LivePreview({
       <div
         className={`bg-white rounded-lg shadow-lg p-4 flip-image ${isFlipping ? "flipping" : isFlippingIn ? "flipping-in" : ""}`}
       >
-        <canvas
-          ref={canvasRef}
-          className="w-full h-auto"
-          style={{ maxWidth: "100%", height: "auto" }}
-        />
+        <canvas ref={canvasRef} className="w-full h-auto" style={{ maxWidth: "100%", height: "auto" }} />
       </div>
     </div>
   );
 }
-

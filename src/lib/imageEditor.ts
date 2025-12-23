@@ -44,10 +44,10 @@ export const PIC_POSITIONS: PICPositions = {
   mobile: { x: 0.215, y: 0.645 },
   localChurch: { x: 0.215, y: 0.802 },
 
-  missionerName: { x: 0.70, y: 0.32 },
+  missionerName: { x: 0.7, y: 0.32 },
   amount: { x: 0.69, y: 0.485 },
   nation: { x: 0.66, y: 0.645 },
-  travelDate: { x: 0.90, y: 0.645 },
+  travelDate: { x: 0.9, y: 0.645 },
   sendingChurch: { x: 0.696, y: 0.802 },
 };
 
@@ -63,7 +63,7 @@ export const SAF_POSITIONS: SAFPositions = {
   canceledGeneralFund: { x: 0.695, y: 0.572 },
 
   offset: { x: 0, y: -0.08 },
-  signature: { x: 0.58, y: 0.71, width: 0.50, height: 0.2 },
+  signature: { x: 0.58, y: 0.71, width: 0.5, height: 0.2 },
   partnerNameUnderSignature: { x: 0.817, y: 0.875 },
 };
 
@@ -99,7 +99,7 @@ function drawText(
   fontSize: number = FONT_SIZE_PIC,
 ) {
   if (!text) return;
-  
+
   ctx.fillStyle = TEXT_COLOR;
   ctx.font = `${fontSize}px ${FONT_FAMILY}`;
   ctx.textBaseline = "top";
@@ -265,7 +265,7 @@ function drawSignature(
       tempCanvas.width = Math.ceil(scaledWidth);
       tempCanvas.height = Math.ceil(scaledHeight);
       const tempCtx = tempCanvas.getContext("2d");
-      
+
       if (!tempCtx) {
         reject(new Error("Could not get temporary canvas context"));
         return;
@@ -273,18 +273,18 @@ function drawSignature(
 
       // Draw the signature to the temporary canvas at original aspect ratio
       tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
-      
+
       // Get image data and thicken the strokes
       const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
       const thickenedData = thickenSignature(imageData, 1);
-      
+
       // Put the thickened image data back
       tempCtx.putImageData(thickenedData, 0, 0);
-      
+
       // Calculate top-left position from center coordinates
       const areaTopLeftX = x - width / 2;
       const areaTopLeftY = y - height / 2;
-      
+
       // Draw the processed signature to the main canvas, centered in the signature area
       ctx.drawImage(tempCanvas, areaTopLeftX + offsetX, areaTopLeftY + offsetY);
       resolve();
@@ -380,7 +380,14 @@ export async function generatePIC(
 
   // Draw Partner section
   if (step2Data.partnerName) {
-    drawText(ctx, step2Data.partnerName, positions.partnerName.x, positions.partnerName.y, canvas.width * 0.25, FONT_SIZE_PIC);
+    drawText(
+      ctx,
+      step2Data.partnerName,
+      positions.partnerName.x,
+      positions.partnerName.y,
+      canvas.width * 0.25,
+      FONT_SIZE_PIC,
+    );
   }
   if (step2Data.email) {
     drawText(ctx, step2Data.email, positions.email.x, positions.email.y, canvas.width * 0.25, FONT_SIZE_PIC);
@@ -389,12 +396,26 @@ export async function generatePIC(
     drawText(ctx, step2Data.mobile, positions.mobile.x, positions.mobile.y, canvas.width * 0.25, FONT_SIZE_PIC);
   }
   if (step2Data.localChurch) {
-    drawText(ctx, step2Data.localChurch, positions.localChurch.x, positions.localChurch.y, canvas.width * 0.25, FONT_SIZE_PIC);
+    drawText(
+      ctx,
+      step2Data.localChurch,
+      positions.localChurch.x,
+      positions.localChurch.y,
+      canvas.width * 0.25,
+      FONT_SIZE_PIC,
+    );
   }
 
   // Draw Recipient section
   if (step1Data.missionerName) {
-    drawText(ctx, step1Data.missionerName, positions.missionerName.x, positions.missionerName.y, canvas.width * 0.25, FONT_SIZE_PIC);
+    drawText(
+      ctx,
+      step1Data.missionerName,
+      positions.missionerName.x,
+      positions.missionerName.y,
+      canvas.width * 0.25,
+      FONT_SIZE_PIC,
+    );
   }
   if (formattedAmount) {
     drawText(ctx, formattedAmount, positions.amount.x, positions.amount.y, canvas.width * 0.25, FONT_SIZE_PIC);
@@ -406,7 +427,14 @@ export async function generatePIC(
     drawText(ctx, formattedDate, positions.travelDate.x, positions.travelDate.y, canvas.width * 0.25, FONT_SIZE_PIC);
   }
   if (step1Data.church) {
-    drawText(ctx, step1Data.church, positions.sendingChurch.x, positions.sendingChurch.y, canvas.width * 0.25, FONT_SIZE_PIC);
+    drawText(
+      ctx,
+      step1Data.church,
+      positions.sendingChurch.x,
+      positions.sendingChurch.y,
+      canvas.width * 0.25,
+      FONT_SIZE_PIC,
+    );
   }
 
   // Convert to blob
@@ -459,12 +487,13 @@ export async function generateSAF(
   const checkImg = await loadImage("/images/check.png");
 
   // Apply offset only if NOT a Victory member (using SAF.png)
-  const offset = step2Data.isVictoryMember !== true 
-    ? { 
-        x: SAF_POSITIONS.offset.x * canvas.width, 
-        y: SAF_POSITIONS.offset.y * canvas.height 
-      }
-    : { x: 0, y: 0 };
+  const offset =
+    step2Data.isVictoryMember !== true
+      ? {
+          x: SAF_POSITIONS.offset.x * canvas.width,
+          y: SAF_POSITIONS.offset.y * canvas.height,
+        }
+      : { x: 0, y: 0 };
 
   // Calculate absolute positions (apply offset to checkboxes only)
   const positions = {
@@ -545,7 +574,14 @@ export async function generateSAF(
 
   // Draw partner name under signature
   if (step2Data.partnerName) {
-    drawText(ctx, step2Data.partnerName, positions.partnerNameUnderSignature.x, positions.partnerNameUnderSignature.y, canvas.width * 0.25, FONT_SIZE_SAF);
+    drawText(
+      ctx,
+      step2Data.partnerName,
+      positions.partnerNameUnderSignature.x,
+      positions.partnerNameUnderSignature.y,
+      canvas.width * 0.25,
+      FONT_SIZE_SAF,
+    );
   }
 
   // Convert to blob
@@ -577,4 +613,3 @@ export function downloadBlob(blob: Blob, filename: string) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
-

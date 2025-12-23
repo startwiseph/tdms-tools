@@ -26,7 +26,8 @@ The following are the frameworks and tools that you must be familiar with to be 
 ```bash
 git clone https://github.com/startwiseph/tdms-tools.git
 ```
-<!-- 
+
+<!--
 2. Create a `.env.local` file at the root of the project with the contents of `.env.example` and fill in the keys.
 
 > [!IMPORTANT]

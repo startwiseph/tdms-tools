@@ -6,13 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 const COUNTRIES_URL = "/countries.json";
@@ -115,7 +109,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
       const yearNum = parseInt(year);
       const dayNum = parseInt(day);
       const daysInMonth = getDaysInMonth(monthNum, yearNum);
-      
+
       // If selected day exceeds days in month, adjust to last day of month
       if (dayNum > daysInMonth) {
         setDay(daysInMonth.toString());
@@ -172,7 +166,7 @@ export function Step1Form({ initialValues, onDataChange }: Step1FormProps) {
   const isDateInvalid = useMemo(() => {
     // Show error if we have a pending invalid date attempt
     if (hasInvalidDateAttempt) return true;
-    
+
     // Check if current selection is invalid
     if (!month || !day || !year) return false;
     const monthNum = parseInt(month);

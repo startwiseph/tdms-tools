@@ -36,7 +36,7 @@ function HomeContent() {
   const nationParam = searchParams.get("nation");
   const dateParam = searchParams.get("date");
   const churchParam = searchParams.get("church");
-  
+
   const initialStep1 = useMemo(() => {
     return {
       missionerName: nameParam || undefined,
@@ -50,7 +50,7 @@ function HomeContent() {
   useEffect(() => {
     // Check if there are any URL parameters
     const hasParams = nameParam || nationParam || dateParam || churchParam;
-    
+
     if (hasParams && !hasClearedParams.current) {
       // Mark as cleared to prevent multiple calls
       hasClearedParams.current = true;
@@ -115,16 +115,12 @@ function HomeContent() {
                 className="text-white hover:underline"
               >
                 click here to see the GitHub Repository
-              </a>
-              {" "}
-              <span className="font-bold text-base">·</span>
-              {" "}
+              </a>{" "}
+              <span className="font-bold text-base">·</span>{" "}
               <Link href="/privacy" className="text-white hover:underline">
                 Privacy Policy
-              </Link>
-              {" "}
-              <span className="font-bold text-base">·</span>
-              {" "}
+              </Link>{" "}
+              <span className="font-bold text-base">·</span>{" "}
               <Link href="/terms" className="text-white hover:underline">
                 Terms of Service
               </Link>

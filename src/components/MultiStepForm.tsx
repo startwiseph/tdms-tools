@@ -24,7 +24,13 @@ interface MultiStepFormProps {
   }) => void;
 }
 
-export function MultiStepForm({ initialStep1, initialStep2, onVictoryMemberChange, onStepChange, onFormDataChange }: MultiStepFormProps) {
+export function MultiStepForm({
+  initialStep1,
+  initialStep2,
+  onVictoryMemberChange,
+  onStepChange,
+  onFormDataChange,
+}: MultiStepFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [step1Data, setStep1Data] = useState<Step1Data | null>(null);
   const [step2Data, setStep2Data] = useState<Step2Data | null>(null);
@@ -263,17 +269,17 @@ export function MultiStepForm({ initialStep1, initialStep2, onVictoryMemberChang
       <div className="space-y-6">
         <div className="min-h-[400px] flex flex-col justify-center gap-6">
           <div className="space-y-4 mt-9">
-            <h2 className="text-2xl font-semibold text-white">
-              Thank you, {step2Data?.partnerName || "Partner"}!
-            </h2>
+            <h2 className="text-2xl font-semibold text-white">Thank you, {step2Data?.partnerName || "Partner"}!</h2>
             <h5 className="text-md font-normal text-white/90">
-              Your PIC and SAF should be downloading now. Please submit these files to <span className="underline">{step1Data?.missionerName || "the Missioner"}</span>, who will upload them to their portal.
+              Your PIC and SAF should be downloading now. Please submit these files to{" "}
+              <span className="underline">{step1Data?.missionerName || "the Missioner"}</span>, who will upload them to
+              their portal.
             </h5>
             <p className="text-sm text-white/80">
               In case the download did not start automatically, you may click the buttons below to download the files.
             </p>
           </div>
-          
+
           <div className="flex flex-col gap-3">
             <Button
               onClick={handleDownloadPIC}
