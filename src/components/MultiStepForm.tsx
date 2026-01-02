@@ -25,6 +25,46 @@ interface MultiStepFormProps {
   }) => void;
 }
 
+// Helper function to parse date strings in multiple formats (same as Step1Form)
+function parseDateString(dateInput: string | Date | undefined): Date | undefined {
+  if (!dateInput) return undefined;
+  if (dateInput instanceof Date) return dateInput;
+  
+  const dateStr = String(dateInput).trim();
+  if (!dateStr) return undefined;
+
+  // Try YYYY-MM-DD format (ISO format)
+  const isoMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (isoMatch) {
+    const [, year, month, day] = isoMatch;
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    if (!isNaN(date.getTime())) {
+      date.setHours(0, 0, 0, 0);
+      return date;
+    }
+  }
+
+  // Try MM-DD-YYYY format
+  const usMatch = dateStr.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (usMatch) {
+    const [, month, day, year] = usMatch;
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    if (!isNaN(date.getTime())) {
+      date.setHours(0, 0, 0, 0);
+      return date;
+    }
+  }
+
+  // Fall back to native Date parsing
+  const date = new Date(dateStr);
+  if (!isNaN(date.getTime())) {
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+
+  return undefined;
+}
+
 export function MultiStepForm({
   initialStep1,
   initialStep2,
@@ -43,6 +83,41 @@ export function MultiStepForm({
   const [picBlob, setPicBlob] = useState<Blob | null>(null);
   const [safBlob, setSafBlob] = useState<Blob | null>(null);
   const [isPersonalLinkModalOpen, setIsPersonalLinkModalOpen] = useState(false);
+
+  // Check if initialStep1 has all required fields and auto-advance to Step 2
+  useEffect(() => {
+    if (initialStep1 && !step1Data) {
+      // Parse date if it's a string
+      const parsedDate = parseDateString(initialStep1.date);
+      
+      // Validate that date is not in the past
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const isValidDate = parsedDate && parsedDate >= today;
+      
+      // Check if all required fields are present and valid
+      const hasMissionerName = initialStep1.missionerName && initialStep1.missionerName.trim() !== "";
+      const hasNation = !!initialStep1.nation;
+      const hasDate = isValidDate;
+      const hasChurch = initialStep1.church && initialStep1.church.trim() !== "";
+      
+      if (hasMissionerName && hasNation && hasDate && hasChurch && parsedDate) {
+        // All fields are present and valid, populate step1Data and advance to Step 2
+        const completeStep1Data: Step1Data = {
+          missionerName: initialStep1.missionerName!.trim(),
+          nation: initialStep1.nation!,
+          date: parsedDate,
+          church: initialStep1.church!.trim(),
+        };
+        setStep1Data(completeStep1Data);
+        setCurrentStep(2);
+        if (onStepChange) {
+          onStepChange(2);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialStep1]);
 
   const handleStepClick = (step: number) => {
     // Allow navigating to any step
