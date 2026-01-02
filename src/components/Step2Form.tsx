@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { MissionerReminder } from "@/components/MissionerReminder";
+import type { Step1Data } from "@/components/Step1Form";
 
 export interface Step2Data {
   partnerName: string;
@@ -19,9 +21,10 @@ export interface Step2Data {
 interface Step2FormProps {
   initialValues?: Partial<Step2Data>;
   onDataChange?: (data: Step2Data) => void;
+  step1Data?: Step1Data | null;
 }
 
-export function Step2Form({ initialValues, onDataChange }: Step2FormProps) {
+export function Step2Form({ initialValues, onDataChange, step1Data }: Step2FormProps) {
   const [partnerName, setPartnerName] = useState(initialValues?.partnerName || "");
   const [amount, setAmount] = useState(initialValues?.amount || "");
   const [denomination, setDenomination] = useState<"PHP" | "USD">(initialValues?.denomination || "PHP");
@@ -73,6 +76,8 @@ export function Step2Form({ initialValues, onDataChange }: Step2FormProps) {
 
   return (
     <div className="space-y-4">
+      <MissionerReminder step1Data={step1Data || null} />
+      
       <div>
         <h2 className="text-xl font-semibold text-white">Partner Information</h2>
         <p className="text-sm text-white/80 mt-1">

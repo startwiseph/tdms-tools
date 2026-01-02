@@ -311,12 +311,19 @@ export function MultiStepForm({
       case 1:
         return <Step1Form initialValues={step1Data || initialStep1} onDataChange={handleStep1DataChange} />;
       case 2:
-        return <Step2Form initialValues={step2Data || initialStep2} onDataChange={handleStep2DataChange} />;
+        return (
+          <Step2Form
+            initialValues={step2Data || initialStep2}
+            onDataChange={handleStep2DataChange}
+            step1Data={step1Data}
+          />
+        );
       case 3:
         return (
           <Step3Form
             initialValues={step3Data ? { answers: step3Data.answers } : undefined}
             onDataChange={handleStep3DataChange}
+            step1Data={step1Data}
           />
         );
       case 4:

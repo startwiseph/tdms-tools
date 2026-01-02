@@ -69,9 +69,9 @@ function HomeContent() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-bc-1">
+    <div className="flex h-screen bg-bc-1 overflow-hidden">
       {/* Left Panel - Settings */}
-      <div className="w-full lg:w-1/3 bg-bc-2 p-4 md:p-6 lg:p-8 overflow-y-auto">
+      <div className="w-full lg:w-1/3 bg-bc-2 p-4 md:p-6 lg:p-8 overflow-y-auto h-full">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6 flex items-stretch gap-4">
             <div className="flex items-center shrink-0 grow-0 self-stretch">
@@ -132,7 +132,7 @@ function HomeContent() {
       </div>
 
       {/* Right Panel - Preview (Desktop Only) */}
-      <div className="hidden lg:flex lg:w-2/3 bg-bc-1/20 items-center justify-center p-8">
+      <div className="hidden lg:flex lg:w-2/3 bg-bc-1/20 items-center justify-center p-8 h-screen sticky top-0 overflow-hidden">
         <LivePreview
           currentStep={currentStep}
           step1Data={formData.step1}

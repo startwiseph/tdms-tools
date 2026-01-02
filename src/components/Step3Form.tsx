@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { accountabilityQuestions } from "@/lib/questions";
+import { MissionerReminder } from "@/components/MissionerReminder";
+import type { Step1Data } from "@/components/Step1Form";
 
 export interface Step3Data {
   answers: Record<number, string>;
@@ -12,9 +14,10 @@ export interface Step3Data {
 interface Step3FormProps {
   initialValues?: Partial<Step3Data>;
   onDataChange?: (data: Step3Data) => void;
+  step1Data?: Step1Data | null;
 }
 
-export function Step3Form({ initialValues, onDataChange }: Step3FormProps) {
+export function Step3Form({ initialValues, onDataChange, step1Data }: Step3FormProps) {
   const [answers, setAnswers] = useState<Record<number, string>>(initialValues?.answers || {});
 
   useEffect(() => {
@@ -33,6 +36,8 @@ export function Step3Form({ initialValues, onDataChange }: Step3FormProps) {
 
   return (
     <div className="space-y-6">
+      <MissionerReminder step1Data={step1Data || null} />
+      
       <div>
         <h2 className="text-xl font-semibold text-white">Support Accountability Form</h2>
         <p className="text-sm text-white/80 mt-1">
