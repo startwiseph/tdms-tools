@@ -416,7 +416,7 @@ export function MultiStepForm({
           <Button
             onClick={() => setIsPersonalLinkModalOpen(true)}
             variant="outline"
-            className="bg-white hover:border-white/80 hover:bg-white/10 hover:text-white"
+            className="border border-white bg-transparent text-white hover:border-white/80 hover:bg-white/10"
           >
             <Link className="h-4 w-4" />
             Get Personal Link
