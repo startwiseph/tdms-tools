@@ -44,7 +44,7 @@ export function MissionerReminder({ step1Data }: MissionerReminderProps) {
   }
 
   return (
-    <div className="mb-6 p-4 bg-bc-1/30 border border-bc-3/50 rounded-lg">
+    <div className="mb-6 p-4 bg-yellow-200/10 border border-yellow-200 rounded-lg">
       <p className="text-sm text-white/90">
         You&apos;re filling this form for <span className="font-semibold underline text-white">{step1Data.missionerName}</span> who will go to{" "}
         <span className="font-semibold underline text-white">{nationName}</span> on{" "}
