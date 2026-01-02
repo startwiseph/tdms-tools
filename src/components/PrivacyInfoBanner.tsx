@@ -11,7 +11,7 @@ export function PrivacyInfoBanner() {
       <div className="flex-1 -mt-1">
         <span className="text-sm font-semibold text-white">Privacy Matters!</span>
         <p className="mt-1 text-sm text-white">
-          Any information you enter in this website stays on your device and is never saved or stored anywhere.
+          Any information you enter in this website stays on your device and is NEVER SAVED anywhere.
         </p>
       </div>
     </div>
